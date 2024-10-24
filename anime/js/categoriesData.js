@@ -1,4 +1,4 @@
-const mainData = () => {
+const categoriesData = () => {
     let preloader = document.querySelector('.preloder');
 
     let renderGanreList = (ganres) => {
@@ -17,7 +17,7 @@ const mainData = () => {
     let renderAnimeList = (array, ganres) => {
         // console.log(array);
         // console.log(ganres);
-        let wrapper = document.querySelector('.product .col-lg-8');
+        let wrapper = document.querySelector('.product-page .col-lg-8');
         // console.log(wrapper);
         // wrapper.innerHTML = '';
 
@@ -26,7 +26,7 @@ const mainData = () => {
             // console.log(ganre);
             let productBlock = document.createElement('div');
             let listBlock = document.createElement('div');
-            let list = array.filter(item => item.ganre === ganre);
+            let list = array.filter(item => item.tags.includes(ganre));
             // console.log(list);
 
             listBlock.classList.add('row');
@@ -107,20 +107,27 @@ const mainData = () => {
         });
     }
 
-
     fetch('https://anime-718a5-default-rtdb.europe-west1.firebasedatabase.app/anime.json')
         // fetch('./db-2.json')
         .then((response) => response.json())
         .then((data) => {
             let ganres = new Set();
+            let ganreParams = new URLSearchParams(window.location.search).get('ganre');
+
+            // console.log(window.location.search);
+            // console.log(ganreParams);
 
             data.forEach((item) => {
                 ganres.add(item.ganre);
             })
             // console.log(ganres);
             renderTopAnime(data.sort((a, b) => b.views - a.views).slice(0, 5));
-            renderAnimeList(data, ganres);
+            if (ganreParams) {
+                renderAnimeList(data, [ganreParams]);
+            } else {
+                renderAnimeList(data, ganres);
+            }
             renderGanreList(ganres);
         });
 };
-mainData();
+categoriesData();
